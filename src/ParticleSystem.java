@@ -1,20 +1,21 @@
 import java.util.Random;
 
+@SuppressWarnings("MagicNumber")
 public class ParticleSystem extends Xform {
     private final Random random = new Random();
     static int emitterRadius = 30;
-    private int emitterPower = 200;
     double horizontalVelocity = 0.2;
     double verticalVelocity = 1;
 
     public void loop() {
-        for (int i = 0; i < emitterPower; i++) {
+        for (int i = 0; i < Settings.getEmitterPower(); i++) {
             addParticle();
         }
         getChildren().forEach(node -> ((Particle) node).move());
         getChildren().removeIf(node -> (!((Particle) node).isAlive()));
     }
 
+    @SuppressWarnings("OverlyComplexBooleanExpression")
     public void addParticle() {
         final double x = emitterRadius * random.nextGaussian() * 0.5;
         final double y = emitterRadius * random.nextGaussian() * 0.5;
@@ -31,5 +32,9 @@ public class ParticleSystem extends Xform {
         final double vz = verticalVelocity;
         final Vector3D velocity = new Vector3D(vx, vy, vz);
         getChildren().add(new Particle(location, velocity, Vector3D.zero(), initialLife));
+    }
+
+    public int getSize() {
+        return getChildren().size();
     }
 }

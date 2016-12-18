@@ -1,34 +1,37 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.Property;
+import javafx.geometry.Insets;
 import javafx.scene.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+@SuppressWarnings("MagicNumber")
 public class Main extends Application {
+    final Stage settings = new Stage();
     final Group root = new Group();
-    final Xform axisGroup = new Xform();
     final Xform world = new Xform();
     final PerspectiveCamera camera = new PerspectiveCamera(true);
     final Xform cameraXform = new Xform();
     final Xform cameraXform2 = new Xform();
     final Xform cameraXform3 = new Xform();
-    private static final double CAMERA_INITIAL_DISTANCE = -300;
-    private static final double CAMERA_INITIAL_X_ANGLE = 90;
-    private static final double CAMERA_INITIAL_Y_ANGLE = 0;
-    private static final double CAMERA_INITIAL_TRANSLATE_Y = -40;
-    private static final double CAMERA_NEAR_CLIP = 0.1;
-    private static final double CAMERA_FAR_CLIP = 10000.0;
-    private static final double MOUSE_SPEED = 0.1;
-    private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 0.3;
     double mousePosX;
     double mousePosY;
     double mouseOldX;
     double mouseOldY;
     double mouseDeltaX;
     double mouseDeltaY;
+    Label particles = new Label();
+    Label fps = new Label();
 
     private void buildCamera() {
         root.getChildren().add(cameraXform);
@@ -36,33 +39,22 @@ public class Main extends Application {
         cameraXform2.getChildren().add(cameraXform3);
         cameraXform3.getChildren().add(camera);
         cameraXform3.setRotateZ(180.0);
-        camera.setNearClip(CAMERA_NEAR_CLIP);
-        camera.setFarClip(CAMERA_FAR_CLIP);
-        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-        camera.setTranslateY(CAMERA_INITIAL_TRANSLATE_Y);
-        cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+        camera.setNearClip(Settings.CAMERA_NEAR_CLIP);
+        camera.setFarClip(Settings.CAMERA_FAR_CLIP);
+        camera.setTranslateZ(Settings.CAMERA_INITIAL_DISTANCE);
+        camera.setTranslateY(Settings.CAMERA_INITIAL_TRANSLATE_Y);
+        cameraXform.setRotateY(Settings.CAMERA_INITIAL_Y_ANGLE);
+        cameraXform.setRotateX(Settings.CAMERA_INITIAL_X_ANGLE);
     }
 
-    private void buildAxes() {
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.RED);
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(Color.GREEN);
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(Color.BLUE);
-        final Box xAxis = new Box(50, 1, 1);
-        final Box yAxis = new Box(1, 50, 1);
-        final Box zAxis = new Box(1, 1, 50);
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        axisGroup.setVisible(false);
-        world.getChildren().addAll(axisGroup);
+    private void buildSettings() {
+        settings.setScene(new Scene(createToolbar()));
+        settings.setTitle("Настройки");
+        settings.setResizable(false);
+        settings.setAlwaysOnTop(true);
     }
 
-    private void handleMouse(Scene scene, final Node root) {
+    private void handleMouse(Scene scene) {
         scene.setOnMousePressed(mouseEventEventHandler -> {
             mousePosX = mouseEventEventHandler.getSceneX();
             mousePosY = mouseEventEventHandler.getSceneY();
@@ -77,36 +69,91 @@ public class Main extends Application {
             mouseDeltaX = (mousePosX - mouseOldX);
             mouseDeltaY = (mousePosY - mouseOldY);
             if (mouseEventEventHandler.isPrimaryButtonDown()) {
-                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX*MOUSE_SPEED*ROTATION_SPEED);
-                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY*MOUSE_SPEED*ROTATION_SPEED);
-            }
-            else if (mouseEventEventHandler.isSecondaryButtonDown()) {
-                final double z = camera.getTranslateZ();
-                final double newZ = z + mouseDeltaX*MOUSE_SPEED;
-                camera.setTranslateZ(newZ);
-            }
-            else if (mouseEventEventHandler.isMiddleButtonDown()) {
-                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX*MOUSE_SPEED*TRACK_SPEED);
-                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY*MOUSE_SPEED*TRACK_SPEED);
+                cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * Settings.MOUSE_SPEED * Settings.ROTATION_SPEED);
+                cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * Settings.MOUSE_SPEED * Settings.ROTATION_SPEED);
             }
         });
     }
 
-    private void handleKeyboard(Scene scene, final Node root) {
+    @SuppressWarnings("all")
+    private void handleKeyboard(Scene scene) {
         scene.setOnKeyPressed(keyEventHandler -> {
             switch (keyEventHandler.getCode()) {
-                case Z:
-                    cameraXform2.t.setX(0.0);
-                    cameraXform2.t.setY(0.0);
-                    camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-                    cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                    cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                case C:
+                    cameraXform2.setTy(0);
+                    cameraXform2.setTx(0);
+                    camera.setTranslateZ(Settings.CAMERA_INITIAL_DISTANCE);
+                    cameraXform.setRotateY(Settings.CAMERA_INITIAL_Y_ANGLE);
+                    cameraXform.setRotateX(Settings.CAMERA_INITIAL_X_ANGLE);
                     break;
-                case X:
-                    axisGroup.setVisible(!axisGroup.isVisible());
+                case O:
+                    settings.show();
                     break;
+                case R:
+                    Settings.reset();
+                    break;
+                case S:
+                    Settings.save();
+                case L:
+                    Settings.load();
             }
         });
+    }
+
+    private Node createSeparator(String text) {
+        final VBox box = new VBox();
+        final Label label = new Label(text);
+        label.setFont(Font.font(null, FontWeight.BOLD, 14));
+        final Separator separator = new Separator();
+        box.getChildren().addAll(separator, label);
+        box.setFillWidth(true);
+        GridPane.setColumnSpan(box, 2);
+        GridPane.setFillWidth(box, true);
+        GridPane.setHgrow(box, Priority.ALWAYS);
+        return box;
+    }
+
+    private Slider createNumberSlider(Property<Number> observable, double min, double max) {
+        final Slider slider = new Slider(min, max, observable.getValue().doubleValue());
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.valueProperty().bindBidirectional(observable);
+        return slider;
+    }
+
+    public Parent createToolbar() {
+        final GridPane gp = new GridPane();
+        gp.setPrefWidth(450);
+        gp.setHgap(1);
+        gp.setVgap(1);
+        gp.setPadding(new Insets(8));
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(30);
+        gp.getColumnConstraints().add(column);
+        column = new ColumnConstraints();
+        column.setPercentWidth(70);
+        gp.getColumnConstraints().add(column);
+        int rowIndex = 0;
+        gp.addRow(rowIndex++, createSeparator("Управление"));
+        gp.addRow(rowIndex++, new Label("Камера"), new Label("вращается мышью"));
+        gp.addRow(rowIndex++, new Label("Сбросить камеру"), new Label("C"));
+        gp.addRow(rowIndex++, new Label("Сбросить настройки"), new Label("R"));
+        gp.addRow(rowIndex++, new Label("Сохранить настройки"), new Label("S"));
+        gp.addRow(rowIndex++, new Label("Загрузить настройки"), new Label("L"));
+        gp.addRow(rowIndex++, new Label("Открыть это окно"), new Label("O"));
+        gp.addRow(rowIndex++, createSeparator("Информация"));
+        gp.addRow(rowIndex++, new Label("Количество частиц"), particles);
+        gp.addRow(rowIndex++, new Label("FPS"), fps);
+        gp.addRow(rowIndex++, createSeparator("Система частиц"));
+        gp.addRow(rowIndex++, new Label("Интенсивность"), createNumberSlider(Settings.emitterPowerProperty(), 100, 300));
+        gp.addRow(rowIndex++, createSeparator("Цвет"));
+        gp.addRow(rowIndex++, new Label("Красный"), createNumberSlider(Settings.initialRedProperty(), 0, 255));
+        gp.addRow(rowIndex++, new Label("Изменение красного"), createNumberSlider(Settings.diffRedProperty(), -255, 255));
+        gp.addRow(rowIndex++, new Label("Зеленый"), createNumberSlider(Settings.initialGreenProperty(), 0, 255));
+        gp.addRow(rowIndex++, new Label("Изменение зеленого"), createNumberSlider(Settings.diffGreenProperty(), -255, 255));
+        gp.addRow(rowIndex++, new Label("Синий"), createNumberSlider(Settings.initialBlueProperty(), 0, 255));
+        gp.addRow(rowIndex, new Label("Изменение синего"), createNumberSlider(Settings.diffBlueProperty(), -255, 255));
+        return gp;
     }
 
     @Override
@@ -114,24 +161,29 @@ public class Main extends Application {
         root.getChildren().add(world);
         root.setDepthTest(DepthTest.ENABLE);
         buildCamera();
-        buildAxes();
+        buildSettings();
         final Scene scene = new Scene(root, 1024, 768, true);
         scene.setFill(Color.GREY);
-        handleKeyboard(scene, world);
-        handleMouse(scene, world);
-        primaryStage.setTitle("Fire");
+        handleKeyboard(scene);
+        handleMouse(scene);
+        primaryStage.setTitle("Огонь");
         primaryStage.setScene(scene);
         primaryStage.show();
         scene.setCamera(camera);
         final ParticleSystem particleSystem = new ParticleSystem();
         world.getChildren().add(particleSystem);
         final AnimationTimer animationTimer = new AnimationTimer() {
+            FpsCounter fpsCounter = new FpsCounter();
             @Override
             public void handle(long now) {
                 particleSystem.loop();
+                fpsCounter.update(now);
+                particles.setText(String.valueOf(particleSystem.getSize()));
+                fps.setText(String.valueOf(fpsCounter.getFrameRate()));
             }
         };
         animationTimer.start();
+        settings.show();
     }
 
     public static void main(String[] args) {
