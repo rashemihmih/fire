@@ -7,15 +7,13 @@ public class Particle extends Xform {
     public static final int MAX_LIFE = 70;
     private Vector3D location;
     private Vector3D velocity;
-    private Vector3D acceleration;
     int initialLife;
     int life;
     Sphere sphere = new Sphere(0.5);
 
-    public Particle(Vector3D location, Vector3D velocity, Vector3D acceleration, int initialLife) {
+    public Particle(Vector3D location, Vector3D velocity, int initialLife) {
         this.location = location;
         this.velocity = velocity;
-        this.acceleration = acceleration;
         getChildren().add(sphere);
         setTx(location.x);
         setTy(location.y);
@@ -24,14 +22,8 @@ public class Particle extends Xform {
         life = initialLife;
     }
 
-    public void force(Vector3D force) {
-        acceleration.add(force);
-    }
-
     public void move() {
-        velocity.add(acceleration);
         location.add(velocity);
-        acceleration.set(0, 0, 0);
         life--;
         repaint();
         setTx(location.x);

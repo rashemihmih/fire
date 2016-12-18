@@ -31,7 +31,7 @@ public class ParticleSystem extends Xform {
         }
         final double vz = verticalVelocity;
         final Vector3D velocity = new Vector3D(vx, vy, vz);
-        getChildren().add(new Particle(location, velocity, Vector3D.zero(), initialLife));
+        getChildren().add(new Particle(location, velocity, initialLife));
     }
 
     public int getSize() {
