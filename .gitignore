@@ -1,4 +1,6 @@
 .idea/
 fire.iml
-out/
 settings.txt
+out/production/
+out/artifacts/fire/fire.html
+out/artifacts/fire/fire.jnlp
