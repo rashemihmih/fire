@@ -6,10 +6,7 @@ import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -48,7 +45,7 @@ public class Main extends Application {
     }
 
     private void buildSettings() {
-        settings.setScene(new Scene(createToolbar()));
+        settings.setScene(new Scene(buildSettingsPane()));
         settings.setTitle("Настройки");
         settings.setResizable(false);
         settings.setAlwaysOnTop(true);
@@ -100,7 +97,7 @@ public class Main extends Application {
         });
     }
 
-    private Node createSeparator(String text) {
+    private Node buildSeparator(String text) {
         final VBox box = new VBox();
         final Label label = new Label(text);
         label.setFont(Font.font(null, FontWeight.BOLD, 14));
@@ -113,7 +110,7 @@ public class Main extends Application {
         return box;
     }
 
-    private Slider createNumberSlider(Property<Number> observable, double min, double max) {
+    private Slider buildSlider(Property<Number> observable, double min, double max) {
         final Slider slider = new Slider(min, max, observable.getValue().doubleValue());
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
@@ -121,7 +118,7 @@ public class Main extends Application {
         return slider;
     }
 
-    public Parent createToolbar() {
+    public Pane buildSettingsPane() {
         final GridPane gp = new GridPane();
         gp.setPrefWidth(450);
         gp.setHgap(1);
@@ -134,25 +131,25 @@ public class Main extends Application {
         column.setPercentWidth(70);
         gp.getColumnConstraints().add(column);
         int rowIndex = 0;
-        gp.addRow(rowIndex++, createSeparator("Управление"));
+        gp.addRow(rowIndex++, buildSeparator("Управление"));
         gp.addRow(rowIndex++, new Label("Камера"), new Label("вращается мышью"));
         gp.addRow(rowIndex++, new Label("Сбросить камеру"), new Label("C"));
         gp.addRow(rowIndex++, new Label("Сбросить настройки"), new Label("R"));
         gp.addRow(rowIndex++, new Label("Сохранить настройки"), new Label("S"));
         gp.addRow(rowIndex++, new Label("Загрузить настройки"), new Label("L"));
         gp.addRow(rowIndex++, new Label("Открыть это окно"), new Label("O"));
-        gp.addRow(rowIndex++, createSeparator("Информация"));
+        gp.addRow(rowIndex++, buildSeparator("Информация"));
         gp.addRow(rowIndex++, new Label("Количество частиц"), particles);
         gp.addRow(rowIndex++, new Label("FPS"), fps);
-        gp.addRow(rowIndex++, createSeparator("Система частиц"));
-        gp.addRow(rowIndex++, new Label("Интенсивность"), createNumberSlider(Settings.emitterPowerProperty(), 100, 300));
-        gp.addRow(rowIndex++, createSeparator("Цвет"));
-        gp.addRow(rowIndex++, new Label("Красный"), createNumberSlider(Settings.initialRedProperty(), 0, 255));
-        gp.addRow(rowIndex++, new Label("Изменение красного"), createNumberSlider(Settings.diffRedProperty(), -255, 255));
-        gp.addRow(rowIndex++, new Label("Зеленый"), createNumberSlider(Settings.initialGreenProperty(), 0, 255));
-        gp.addRow(rowIndex++, new Label("Изменение зеленого"), createNumberSlider(Settings.diffGreenProperty(), -255, 255));
-        gp.addRow(rowIndex++, new Label("Синий"), createNumberSlider(Settings.initialBlueProperty(), 0, 255));
-        gp.addRow(rowIndex, new Label("Изменение синего"), createNumberSlider(Settings.diffBlueProperty(), -255, 255));
+        gp.addRow(rowIndex++, buildSeparator("Система частиц"));
+        gp.addRow(rowIndex++, new Label("Интенсивность"), buildSlider(Settings.emitterPowerProperty(), 100, 300));
+        gp.addRow(rowIndex++, buildSeparator("Цвет"));
+        gp.addRow(rowIndex++, new Label("Красный"), buildSlider(Settings.initialRedProperty(), 0, 255));
+        gp.addRow(rowIndex++, new Label("Изменение красного"), buildSlider(Settings.diffRedProperty(), -255, 255));
+        gp.addRow(rowIndex++, new Label("Зеленый"), buildSlider(Settings.initialGreenProperty(), 0, 255));
+        gp.addRow(rowIndex++, new Label("Изменение зеленого"), buildSlider(Settings.diffGreenProperty(), -255, 255));
+        gp.addRow(rowIndex++, new Label("Синий"), buildSlider(Settings.initialBlueProperty(), 0, 255));
+        gp.addRow(rowIndex, new Label("Изменение синего"), buildSlider(Settings.diffBlueProperty(), -255, 255));
         return gp;
     }
 
