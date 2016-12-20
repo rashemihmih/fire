@@ -1,3 +1,5 @@
+package model;
+
 public class Vector3D {
     double x;
     double y;

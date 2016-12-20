@@ -1,3 +1,7 @@
+package model;
+
+import view.Xform;
+
 import java.util.Random;
 
 @SuppressWarnings("MagicNumber")

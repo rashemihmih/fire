@@ -1,3 +1,5 @@
+package view;
+
 @SuppressWarnings("MagicNumber")
 public class FpsCounter {
     private final long[] frameTimes = new long[10];

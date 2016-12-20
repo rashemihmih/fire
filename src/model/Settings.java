@@ -1,3 +1,5 @@
+package model;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -113,7 +115,7 @@ public class Settings {
 
     @SuppressWarnings("MagicNumber")
     public static void reset() {
-        emitterPower.set(200);
+        emitterPower.set(100);
         initialRed.set(255);
         diffRed.set(-40);
         initialGreen.set(225);

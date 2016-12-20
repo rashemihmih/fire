@@ -1,6 +1,9 @@
+package model;
+
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
+import view.Xform;
 
 @SuppressWarnings("MagicNumber")
 public class Particle extends Xform {
