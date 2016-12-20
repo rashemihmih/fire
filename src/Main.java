@@ -160,7 +160,7 @@ public class Main extends Application {
         buildCamera();
         buildSettings();
         final Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
+        scene.setFill(Color.BLACK);
         handleKeyboard(scene);
         handleMouse(scene);
         primaryStage.setTitle("Огонь");
