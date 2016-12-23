@@ -12,7 +12,7 @@ public class Particle extends Xform {
     private Vector3D velocity;
     private int initialLife;
     private int life;
-    private Sphere sphere = new Sphere(0.5);
+    private Sphere sphere = new Sphere(0.3);
 
     public Particle(Vector3D location, Vector3D velocity, int initialLife) {
         this.location = location;

@@ -5,7 +5,6 @@ import model.Model;
 import view.MainView;
 import view.SettingsView;
 
-@SuppressWarnings("MagicNumber")
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
